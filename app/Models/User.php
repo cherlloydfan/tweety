@@ -15,7 +15,7 @@ class User extends Authenticatable
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
-    use Notifiable;
+    use Notifiable, Followable;
     use TwoFactorAuthenticatable;
 
     /**
@@ -60,7 +60,7 @@ class User extends Authenticatable
     ];
 
     public function getAvatarAttribute(){
-        return "https://i.pravatar.cc/40?u=" .$this->email;
+        return "https://i.pravatar.cc/200?u=" .$this->email;
     }
     public function timeline(){
         $friends = $this->follows()->pluck('id');
@@ -70,17 +70,16 @@ class User extends Authenticatable
        ->latest()->get();
     }
     public function tweets(){
-        return $this->hasMany(Tweet::class);
-    }
-    public function follow(User $user){
-        return $this->follows()->save($user);
-    }
-    
-    public function follows(){
-        return $this->belongsToMany(User::class, 'follows', 'user_id' , 'following_user_id');
+        return $this->hasMany(Tweet::class)->latest();
     }
     public function getRouteKeyName()
     {
         return 'name';
     }
+  public function path($append = '')
+  {
+      $path = route('profile', $this->name);
+
+      return $append ? "$path}/{$append}" : $path;
+  }
 }
