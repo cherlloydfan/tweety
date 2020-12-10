@@ -23,11 +23,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $guarded=[];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -59,27 +55,29 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-    public function getAvatarAttribute(){
-        return "https://i.pravatar.cc/200?u=" .$this->email;
+    public function getAvatarAttribute($value){
+        return asset($value ?:'/images/defaultavatar.jpg');
+    }
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
     }
     public function timeline(){
         $friends = $this->follows()->pluck('id');
        
        return Tweet::whereIn('user_id', $friends)
        ->orWhere('user_id',$this->id)
+       ->withLikes()
        ->latest()->get();
     }
     public function tweets(){
         return $this->hasMany(Tweet::class)->latest();
     }
-    public function getRouteKeyName()
-    {
-        return 'name';
-    }
+  
   public function path($append = '')
   {
-      $path = route('profile', $this->name);
+      $path = route('profile', $this->username);
 
-      return $append ? "$path}/{$append}" : $path;
+      return $append ? "{$path}/{$append}" : $path;
   }
 }

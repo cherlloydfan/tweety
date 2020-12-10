@@ -27,7 +27,7 @@
                     @auth
                         <a href="{{ url('/dashboard') }}" class="text-sm text-gray-700 underline">Dashboard</a>
                     @else
-                    <a href="{{ url('home') }}" style= "margin-right:20px" class="text-sm text-gray-700 underline">Home</a>
+                    <a href="{{ url('tweets') }}" style= "margin-right:20px" class="text-sm text-gray-700 underline">Tweets</a>
                         <a href="{{ route('login') }}" class="text-sm text-gray-700 underline">Login</a>
 
                         @if (Route::has('register'))
